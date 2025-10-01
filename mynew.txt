@@ -1,0 +1,345 @@
+import React, { useState } from 'react';
+import { ShoppingCart, Menu, X, Phone, Mail, MapPin, User, Search, Heart } from 'lucide-react';
+
+export default function TechnoServeApp() {
+  const [cart, setCart] = useState([]);
+  const [showMenu, setShowMenu] = useState(false);
+  const [currentPage, setCurrentPage] = useState('home');
+  const [cartOpen, setCartOpen] = useState(false);
+
+  const products = [
+    {
+      id: 1,
+      name: 'Gaming Laptop Pro X1',
+      category: 'Laptops',
+      price: 89999,
+      sale: 15,
+      image: 'https://images.unsplash.com/photo-1603302576837-37561b2e2302?w=400',
+      specs: 'Intel i7, 16GB RAM, RTX 3060'
+    },
+    {
+      id: 2,
+      name: 'Professional Desktop PC',
+      category: 'Computers',
+      price: 65999,
+      sale: 10,
+      image: 'https://images.unsplash.com/photo-1587202372634-32705e3bf49c?w=400',
+      specs: 'AMD Ryzen 7, 32GB RAM, 1TB SSD'
+    },
+    {
+      id: 3,
+      name: 'Intel Core i9 Processor',
+      category: 'Processors',
+      price: 45999,
+      sale: 8,
+      image: 'https://images.unsplash.com/photo-1555617981-dac3880eac6e?w=400',
+      specs: '12th Gen, 16 Cores, 24 Threads'
+    },
+    {
+      id: 4,
+      name: 'ASUS ROG Motherboard',
+      category: 'Motherboards',
+      price: 28999,
+      sale: 12,
+      image: 'https://images.unsplash.com/photo-1591488320449-011701bb6704?w=400',
+      specs: 'ATX, DDR5, PCIe 5.0'
+    },
+    {
+      id: 5,
+      name: 'DSLR Camera Pro 850D',
+      category: 'Cameras',
+      price: 75999,
+      sale: 20,
+      image: 'https://images.unsplash.com/photo-1502920917128-1aa500764cbd?w=400',
+      specs: '24MP, 4K Video, WiFi'
+    },
+    {
+      id: 6,
+      name: 'Mechanical RGB Keyboard',
+      category: 'Keyboards',
+      price: 6999,
+      sale: 25,
+      image: 'https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=400',
+      specs: 'Cherry MX, RGB Backlit, Wireless'
+    }
+  ];
+
+  const addToCart = (product) => {
+    const existingItem = cart.find(item => item.id === product.id);
+    if (existingItem) {
+      setCart(cart.map(item => 
+        item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
+      ));
+    } else {
+      setCart([...cart, { ...product, quantity: 1 }]);
+    }
+    setCartOpen(true);
+  };
+
+  const removeFromCart = (id) => {
+    setCart(cart.filter(item => item.id !== id));
+  };
+
+  const getTotalPrice = () => {
+    return cart.reduce((sum, item) => {
+      const discountedPrice = item.price - (item.price * item.sale / 100);
+      return sum + (discountedPrice * item.quantity);
+    }, 0);
+  };
+
+  const HomePage = () => (
+    <div>
+      <div className="bg-gradient-to-r from-blue-900 to-blue-700 text-white py-16 px-4">
+        <div className="max-w-6xl mx-auto text-center">
+          <img src="https://i.postimg.cc/W45zvXq4/Screenshot-2025-02-01-121823-removebg-preview.png" alt="TechnoServe Logo" className="h-32 mx-auto mb-6" />
+          <h1 className="text-4xl font-bold mb-4">Welcome to TechnoServe</h1>
+          <p className="text-xl mb-8">Innovate. Connect. Empower.</p>
+          <button 
+            onClick={() => setCurrentPage('products')}
+            className="bg-white text-blue-900 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition"
+          >
+            Shop Now
+          </button>
+        </div>
+      </div>
+
+      <div className="max-w-6xl mx-auto py-12 px-4">
+        <h2 className="text-3xl font-bold text-center mb-8 text-gray-800">Featured Categories</h2>
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
+          {['Laptops', 'Computers', 'Processors', 'Motherboards', 'Cameras', 'Keyboards'].map(cat => (
+            <div 
+              key={cat}
+              onClick={() => setCurrentPage('products')}
+              className="bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition cursor-pointer text-center border-2 border-gray-200"
+            >
+              <h3 className="font-semibold text-lg text-gray-800">{cat}</h3>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+
+  const ProductsPage = () => (
+    <div className="max-w-6xl mx-auto py-8 px-4">
+      <h2 className="text-3xl font-bold mb-8 text-gray-800">Our Products</h2>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {products.map(product => {
+          const discountedPrice = product.price - (product.price * product.sale / 100);
+          return (
+            <div key={product.id} className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition">
+              <div className="relative">
+                <img src={product.image} alt={product.name} className="w-full h-48 object-cover" />
+                {product.sale > 0 && (
+                  <div className="absolute top-2 right-2 bg-red-600 text-white px-3 py-1 rounded-full text-sm font-bold">
+                    {product.sale}% OFF
+                  </div>
+                )}
+              </div>
+              <div className="p-4">
+                <span className="text-xs text-blue-600 font-semibold">{product.category}</span>
+                <h3 className="font-bold text-lg mt-1 mb-2 text-gray-800">{product.name}</h3>
+                <p className="text-sm text-gray-600 mb-3">{product.specs}</p>
+                <div className="flex items-center gap-2 mb-3">
+                  <span className="text-2xl font-bold text-gray-800">₹{discountedPrice.toLocaleString()}</span>
+                  {product.sale > 0 && (
+                    <span className="text-sm text-gray-500 line-through">₹{product.price.toLocaleString()}</span>
+                  )}
+                </div>
+                <button 
+                  onClick={() => addToCart(product)}
+                  className="w-full bg-blue-900 text-white py-2 rounded-lg hover:bg-blue-800 transition font-semibold"
+                >
+                  Add to Cart
+                </button>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+
+  const AboutPage = () => (
+    <div className="max-w-4xl mx-auto py-12 px-4">
+      <h2 className="text-3xl font-bold mb-6 text-gray-800">About TechnoServe</h2>
+      <div className="bg-white rounded-lg shadow-lg p-8">
+        <p className="text-lg text-gray-700 leading-relaxed mb-4">
+          TechnoServe is your premier destination for cutting-edge technology products and services. We specialize in providing high-quality laptops, computers, computer parts, and accessories to tech enthusiasts, professionals, and businesses across India.
+        </p>
+        <p className="text-lg text-gray-700 leading-relaxed mb-4">
+          Our mission is to innovate, connect, and empower our customers by offering the latest technology at competitive prices. With a carefully curated selection of products from leading brands, we ensure that every purchase meets the highest standards of quality and performance.
+        </p>
+        <p className="text-lg text-gray-700 leading-relaxed">
+          Whether you're building your dream gaming rig, upgrading your workstation, or capturing life's moments with professional cameras, TechnoServe has everything you need under one roof. Our expert team is committed to providing exceptional service and technical support to help you make informed decisions.
+        </p>
+      </div>
+    </div>
+  );
+
+  const ContactPage = () => (
+    <div className="max-w-4xl mx-auto py-12 px-4">
+      <h2 className="text-3xl font-bold mb-6 text-gray-800">Contact Us</h2>
+      <div className="bg-white rounded-lg shadow-lg p-8">
+        <div className="space-y-6">
+          <div className="flex items-start gap-4">
+            <Phone className="w-6 h-6 text-blue-900 mt-1" />
+            <div>
+              <h3 className="font-semibold text-lg text-gray-800 mb-1">Phone</h3>
+              <a href="tel:8825242683" className="text-blue-600 hover:underline text-lg">
+                +91 8825242683
+              </a>
+            </div>
+          </div>
+          <div className="flex items-start gap-4">
+            <Mail className="w-6 h-6 text-blue-900 mt-1" />
+            <div>
+              <h3 className="font-semibold text-lg text-gray-800 mb-1">Email</h3>
+              <a href="mailto:info@technoserve.com" className="text-blue-600 hover:underline text-lg">
+                info@technoserve.com
+              </a>
+            </div>
+          </div>
+          <div className="flex items-start gap-4">
+            <MapPin className="w-6 h-6 text-blue-900 mt-1" />
+            <div>
+              <h3 className="font-semibold text-lg text-gray-800 mb-1">Address</h3>
+              <p className="text-gray-700">Jamshedpur, Jharkhand, India</p>
+            </div>
+          </div>
+        </div>
+        <div className="mt-8 pt-8 border-t">
+          <h3 className="font-semibold text-lg text-gray-800 mb-4">Business Hours</h3>
+          <p className="text-gray-700">Monday - Saturday: 9:00 AM - 8:00 PM</p>
+          <p className="text-gray-700">Sunday: 10:00 AM - 6:00 PM</p>
+        </div>
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <header className="bg-blue-900 text-white shadow-lg sticky top-0 z-50">
+        <div className="max-w-6xl mx-auto px-4 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3 cursor-pointer" onClick={() => setCurrentPage('home')}>
+              <img src="https://i.postimg.cc/W45zvXq4/Screenshot-2025-02-01-121823-removebg-preview.png" alt="Logo" className="h-12" />
+              <span className="text-xl font-bold">TechnoServe</span>
+            </div>
+            
+            <nav className="hidden md:flex gap-6">
+              <button onClick={() => setCurrentPage('home')} className="hover:text-gray-300 transition">Home</button>
+              <button onClick={() => setCurrentPage('products')} className="hover:text-gray-300 transition">Products</button>
+              <button onClick={() => setCurrentPage('about')} className="hover:text-gray-300 transition">About</button>
+              <button onClick={() => setCurrentPage('contact')} className="hover:text-gray-300 transition">Contact</button>
+            </nav>
+
+            <div className="flex items-center gap-4">
+              <button className="relative" onClick={() => setCartOpen(!cartOpen)}>
+                <ShoppingCart className="w-6 h-6" />
+                {cart.length > 0 && (
+                  <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                    {cart.length}
+                  </span>
+                )}
+              </button>
+              <button className="md:hidden" onClick={() => setShowMenu(!showMenu)}>
+                {showMenu ? <X /> : <Menu />}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {showMenu && (
+          <div className="md:hidden bg-blue-800 px-4 py-4">
+            <nav className="flex flex-col gap-3">
+              <button onClick={() => { setCurrentPage('home'); setShowMenu(false); }} className="text-left hover:text-gray-300">Home</button>
+              <button onClick={() => { setCurrentPage('products'); setShowMenu(false); }} className="text-left hover:text-gray-300">Products</button>
+              <button onClick={() => { setCurrentPage('about'); setShowMenu(false); }} className="text-left hover:text-gray-300">About</button>
+              <button onClick={() => { setCurrentPage('contact'); setShowMenu(false); }} className="text-left hover:text-gray-300">Contact</button>
+            </nav>
+          </div>
+        )}
+      </header>
+
+      {/* Cart Sidebar */}
+      {cartOpen && (
+        <div className="fixed right-0 top-0 h-full w-80 bg-white shadow-2xl z-50 overflow-y-auto">
+          <div className="p-4 bg-blue-900 text-white flex justify-between items-center">
+            <h3 className="font-bold text-lg">Shopping Cart</h3>
+            <button onClick={() => setCartOpen(false)}><X /></button>
+          </div>
+          <div className="p-4">
+            {cart.length === 0 ? (
+              <p className="text-gray-500 text-center py-8">Your cart is empty</p>
+            ) : (
+              <>
+                {cart.map(item => {
+                  const discountedPrice = item.price - (item.price * item.sale / 100);
+                  return (
+                    <div key={item.id} className="mb-4 pb-4 border-b">
+                      <div className="flex justify-between items-start">
+                        <div className="flex-1">
+                          <h4 className="font-semibold text-sm">{item.name}</h4>
+                          <p className="text-xs text-gray-600">Qty: {item.quantity}</p>
+                          <p className="font-bold text-blue-900 mt-1">₹{discountedPrice.toLocaleString()}</p>
+                        </div>
+                        <button onClick={() => removeFromCart(item.id)} className="text-red-600 text-sm">Remove</button>
+                      </div>
+                    </div>
+                  );
+                })}
+                <div className="mt-6 pt-4 border-t">
+                  <div className="flex justify-between items-center mb-4">
+                    <span className="font-bold text-lg">Total:</span>
+                    <span className="font-bold text-xl text-blue-900">₹{getTotalPrice().toLocaleString()}</span>
+                  </div>
+                  <button className="w-full bg-blue-900 text-white py-3 rounded-lg font-semibold hover:bg-blue-800 transition">
+                    Checkout
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Main Content */}
+      <main className="min-h-screen">
+        {currentPage === 'home' && <HomePage />}
+        {currentPage === 'products' && <ProductsPage />}
+        {currentPage === 'about' && <AboutPage />}
+        {currentPage === 'contact' && <ContactPage />}
+      </main>
+
+      {/* Footer */}
+      <footer className="bg-gray-900 text-white py-8 mt-12">
+        <div className="max-w-6xl mx-auto px-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div>
+              <h4 className="font-bold text-lg mb-3">TechnoServe</h4>
+              <p className="text-gray-400 text-sm">Innovate. Connect. Empower.</p>
+            </div>
+            <div>
+              <h4 className="font-bold text-lg mb-3">Quick Links</h4>
+              <div className="space-y-2 text-sm">
+                <p className="text-gray-400 cursor-pointer hover:text-white">Privacy Policy</p>
+                <p className="text-gray-400 cursor-pointer hover:text-white">Terms & Conditions</p>
+                <p className="text-gray-400 cursor-pointer hover:text-white">Return Policy</p>
+              </div>
+            </div>
+            <div>
+              <h4 className="font-bold text-lg mb-3">Contact</h4>
+              <p className="text-gray-400 text-sm">Phone: +91 8825242683</p>
+              <p className="text-gray-400 text-sm">Email: info@technoserve.com</p>
+            </div>
+          </div>
+          <div className="border-t border-gray-800 mt-8 pt-6 text-center text-sm text-gray-400">
+            © 2025 TechnoServe. All rights reserved.
+          </div>
+        </div>
+      </footer>
+    </div>
+  );
+}
